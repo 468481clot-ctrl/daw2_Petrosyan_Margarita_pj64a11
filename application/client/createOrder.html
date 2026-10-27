@@ -1,0 +1,126 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>OptiOrder - Create Order</title>
+</head>
+
+<body>
+    <h1>Create a New Order</h1>
+
+    <form id="orderForm">
+        <label for="orderId">Order ID:</label>
+        <input type="text" id="orderId" name="orderId" required>
+
+        <br><br>
+
+        <label for="customerName">Customer Full Name:</label>
+        <input type="text" id="customerName" name="customerName" required>
+
+        <br><br>
+
+        <label for="address">Physical Address:</label>
+        <input type="text" id="address" name="address" required>
+
+        <br><br>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+
+        <br><br>
+
+        <label for="phone">Phone:</label>
+        <input type="text" id="phone" name="phone" required>
+
+        <h2>Products</h2>
+
+        <input type="checkbox" id="product1"
+               name="products[1]" value="Eyeglasses"
+               onchange="toggleQuantity(1)">
+        <label for="product1">Eyeglasses - €100</label>
+        <input type="number" id="quantity1"
+               name="quantities[1]" min="1" value="1" disabled>
+        <br><br>
+
+        <input type="checkbox" id="product2"
+               name="products[2]" value="Sunglasses"
+               onchange="toggleQuantity(2)">
+        <label for="product2">Sunglasses - €80</label>
+        <input type="number" id="quantity2"
+               name="quantities[2]" min="1" value="1" disabled>
+        <br><br>
+
+        <input type="checkbox" id="product3"
+               name="products[3]" value="Contact Lenses"
+               onchange="toggleQuantity(3)">
+        <label for="product3">Contact Lenses - €30</label>
+        <input type="number" id="quantity3"
+               name="quantities[3]" min="1" value="1" disabled>
+        <br><br>
+
+        <input type="checkbox" id="product4"
+               name="products[4]" value="Lens Cleaning Kit"
+               onchange="toggleQuantity(4)">
+        <label for="product4">Lens Cleaning Kit - €10</label>
+        <input type="number" id="quantity4"
+               name="quantities[4]" min="1" value="1" disabled>
+        <br><br>
+
+        <button type="submit">Create Order</button>
+    </form>
+
+    <p id="result"></p>
+
+    <br>
+
+    <button type="button"
+            onclick="window.location.href='operations.html'">
+        Back to Operations
+    </button>
+
+    <button type="button"
+            onclick="window.location.href='index.html'">
+        Back to Home
+    </button>
+
+    <script>
+        function toggleQuantity(id) {
+            var checkbox = document.getElementById("product" + id);
+            var quantity = document.getElementById("quantity" + id);
+
+            quantity.disabled = !checkbox.checked;
+        }
+
+        function sendOrder(event) {
+            event.preventDefault();
+
+            var form = document.getElementById("orderForm");
+            var data = new FormData(form);
+
+            fetch("../server/createOrder.php", {
+                method: "POST",
+                body: data
+            })
+            .then(function(response) {
+                if (!response.ok) {
+                    throw new Error("Order could not be saved.");
+                }
+
+                return response.text();
+            })
+            .then(function(result) {
+                document.getElementById("result").textContent =
+                    "Order total including VAT: " + result;
+            })
+            .catch(function() {
+                document.getElementById("result").textContent =
+                    "An error occurred while creating the order.";
+            });
+        }
+
+        document.getElementById("orderForm")
+            .addEventListener("submit", sendOrder);
+    </script>
+</body>
+</html>
